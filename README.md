@@ -2,7 +2,8 @@
 The SunSmart application is an IoT enabled web application for monitoring the amount of sun exposure a user receives.
 
 ## Prerequisites
-* Head to [weatherbit.io](https://www.weatherbit.io/api) get API key and replace `var apikey = "YOUR_API_KEY";` in `iot-server/routes/uvindex.js`.
+* Head to [weatherbit.io](https://www.weatherbit.io/api) get API key
+* Replace `YOUR_API_KEY` with API keys in `iot-server/3rd-party-apikeys`.
 
 ## Usage
 1. `sudo npm install express-generator -g`

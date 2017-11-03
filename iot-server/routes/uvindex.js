@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var request = require("request");
+var fs = require('fs');
 
 router.get('/', function(req, res, next) {
   var responseJson = {
@@ -8,8 +9,10 @@ router.get('/', function(req, res, next) {
     status: "ERROR"
   };
 
-  // Fill your weather.io api key.
-  var apikey = "YOUR_API_KEY";
+  // Import api key from a text file.
+  var apikey = fs.readFileSync(__dirname + '/../3rd-party-apikeys/weatherbit').toString();
+  // Trim newlines away
+  apikey = apikey.replace(/(\r\n|\n|\r)/gm,"");
 
   if (req.query.hasOwnProperty("zip")) {
   	var zip_code = req.query.zip;
@@ -35,14 +38,17 @@ router.get('/', function(req, res, next) {
     // If the zip_code is invalid, body will be empty. Need to check it at first.
     if (body) {
       var data = JSON.parse(body);
-
-      responseJson.uv = data.data[0].uv;
-      responseJson.status = "OK";
-      // Send the response
-      res.status(200).send(JSON.stringify(responseJson));
+      // Add error handling while getting an error message from weatherbit.io
+      if (data.hasOwnProperty("error")){
+        return res.status(200).send(body);
+      } else {
+        responseJson.uv = data.data[0].uv;
+        responseJson.status = "OK";
+        // Send the response
+        res.status(200).send(JSON.stringify(responseJson));
+      }
     } else
       return res.status(200).send(JSON.stringify(responseJson));
-
   });
 });
 
