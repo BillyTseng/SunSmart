@@ -1,5 +1,5 @@
 function postJson() {
-  var url = "http://ec2-18-216-112-9.us-east-2.compute.amazonaws.com:3000/create";
+  var url = "/create";
   var json = document.getElementById("jsonData").value;
 
   var xhr = new XMLHttpRequest();
