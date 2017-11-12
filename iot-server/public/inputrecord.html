@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="javascripts/inputrecord.js" defer></script>
+  <!--Let browser know website is optimized for mobile-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body>
+<p class="card-title">JSON POSTer</p>
+<div class="input-field">
+  <textarea cols="70" rows="10" id="jsonData">
+    {
+      "deviceId": "Debug1",
+      "latitude": "32.248814",
+      "longitude": "-110.987419",
+      "uv": "2"
+    }
+  </textarea>
+</div>
+<a id="postJson" class="btn">POST JSON</a>
+<div class="card-panel" id="ServerResponse" style="display: none"></div>
+</body>
+</html>
