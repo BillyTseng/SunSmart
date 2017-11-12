@@ -3,7 +3,7 @@ var router = express.Router();
 var Record = require("../models/record");
 
 /* POST: create a new record. */
-router.post('/', function(req, res, next) {
+router.post('/create', function(req, res, next) {
 
   var responseJson = {
     status : "",
@@ -30,7 +30,8 @@ router.post('/', function(req, res, next) {
 });
 
 // GET request return all
-router.get('/status/all', function(req, res, next) {
+router.get('/all', function(req, res, next) {
+  // Empty query means find all data in the database.
   var query = {};
   // Query the devices collection to returned requested documents
   Record.find(query, function(err, allDevices) {
@@ -38,12 +39,11 @@ router.get('/status/all', function(req, res, next) {
       var errormsg = {"message": err};
       res.status(400).send(JSON.stringify(errormsg));
     } else {
-      // Create JSON response consisting of an array of devices
-      var responseJson = { devices: [] };
+      // Create JSON response to contain all record.
+      var responseJson = { record: [] };
       for (var doc of allDevices) {
         // For each found device add a new element to the array
-        // with the device id and last contact time
-        responseJson.devices.push({
+        responseJson.record.push({
           "deviceId": doc.deviceId,
           "latitude": doc.latitude,
           "longitude": doc.longitude,
