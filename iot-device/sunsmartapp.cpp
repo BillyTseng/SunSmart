@@ -7,18 +7,18 @@ void setup() {
     // Setup pin mode for button
     pinMode(button, INPUT);
     // Setup webhook subscribe
-    Particle.subscribe("hook-response/holz", myHandler, MY_DEVICES);
+    Particle.subscribe("hook-response/sunsmart", myHandler, MY_DEVICES);
 }
 // main loop
 void loop() {
     // read button and if it is pressed
     if (digitalRead(button) == 0) { // pulldown resistor, 0: Pressed
         // Construct json string
-        String data = String("{ \"longitude\": -110.954099, \"latitude\": 32.234999 }");
+        String data = String("{ \"longitude\": -110.950258, \"latitude\": 32.227698, \"uv\": 222 }");
         // Log to serial console
         Serial.println("button pressed!");
         // Publish to webhook
-        Particle.publish("holz", data, PRIVATE);
+        Particle.publish("sunsmart", data, PRIVATE);
     }
     // delay .5 second to block continuous input
     delay(500);
