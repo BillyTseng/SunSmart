@@ -9,6 +9,7 @@ var index = require('./routes/index');
 var users = require('./routes/users');
 var uvindex = require('./routes/uvindex');
 var record = require('./routes/record');
+var device = require('./routes/device');
 
 var app = express();
 
@@ -28,6 +29,7 @@ app.use('/', index);
 app.use('/users', users);
 app.use('/uvindex', uvindex);
 app.use('/record', record);
+app.use('/device', device);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
