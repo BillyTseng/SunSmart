@@ -12,7 +12,7 @@ function allRecordResponse() {
 
     // 200 is the response code for a successful GET request
     if (this.status === 200) {
-        responseHTML = "<table>";
+        responseHTML = '<table class="table">';
         responseHTML += '<tr><th>Device ID</th><th>Latitude</th><th>Longitude</th>' +
                             '<th>UV Index</th><th>Submitted Time</th></tr>';
         for (var rec of this.response.record) {
