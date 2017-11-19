@@ -1,7 +1,9 @@
 // This #include statement was automatically added by the Particle IDE.
+#include <Adafruit_VEML6070.h>
+
+// This #include statement was automatically added by the Particle IDE.
 #include <Adafruit_GPS.h>
 
-#include <Adafruit_VEML6070.h>
 #include <Wire.h>
 //instantiating the uv sensor
 
@@ -18,6 +20,12 @@ Adafruit_GPS GPS(&GPSSerial);
 uint32_t timer = millis();
 // assign SETUP button's pin
 int button = BTN;
+
+String formatResult(String longitude, String latitude, String uv){
+    return "{ \"longitude\":" + longitude + ", \"latitude\":" + latitude + ",\"uv\":" + uv;
+}
+
+
 // Setup
 void setup() {
     // Setup serial port
@@ -43,13 +51,14 @@ void setup() {
     
     Particle.subscribe("hook-response/sunsmart", myHandler, MY_DEVICES);
 }
+
 // main loop
 void loop() {
-    String format = "{ \"longitude\": %s, \"latitude\": %s, \"uv\": %d }";
+    String format = "{ \"longitude\": %s, \"latitude\": %s, \"uv\": %s }";
     String longitudeString = "-1";
     String latitudeString = "-1";
     String uvString = "-1";
-    String response = sprintf(format, longitude, latitude, uv);
+    String response = formatResult(longitudeString, latitudeString, uvString);
    
 
     char c = GPS.read();
@@ -59,10 +68,10 @@ void loop() {
                         
     }
     if (digitalRead(button) == 0) { 
-        String uvString = String(uv.readUV());
-        String latitudeString = (GPS.latitude);
-        String longitudeString = (GPS.longitude); 
-        response = sprintf(format, longitudeString, latitudeString, uvString);
+         uvString = String(uv.readUV());
+         latitudeString = String(GPS.latitude);
+         longitudeString = String(GPS.longitude); 
+        response = formatResult(longitudeString, latitudeString, uvString);
         Serial.println(response);
         Particle.publish("sunsmart", response, PRIVATE);
     }
