@@ -1,9 +1,13 @@
 // This #include statement was automatically added by the Particle IDE.
 #include <Adafruit_GPS.h>
 
+#include <Adafruit_VEML6070.h>
+#include <Wire.h>
+//instantiating the uv sensor
 
 #define GPSSerial Serial1
 
+Adafruit_VEML6070 uv = Adafruit_VEML6070();
 // Connect to the GPS on the hardware port
 Adafruit_GPS GPS(&GPSSerial);
      
@@ -41,7 +45,7 @@ void setup() {
 }
 // main loop
 void loop() {
-    String format = "{ \"longitude\": %f, \"latitude\": %f, \"uv\": %d }";
+    String format = "{ \"longitude\": %s, \"latitude\": %s, \"uv\": %d }";
     String longitudeString = "-1";
     String latitudeString = "-1";
     String uvString = "-1";
@@ -55,11 +59,14 @@ void loop() {
                         
     }
     if (digitalRead(button) == 0) { 
-        response = sprintf(format, longitude, latitude, uv);
+        String uvString = String(uv.readUV());
+        String latitudeString = (GPS.latitude);
+        String longitudeString = (GPS.longitude); 
+        response = sprintf(format, longitudeString, latitudeString, uvString);
         Serial.println(response);
         Particle.publish("sunsmart", response, PRIVATE);
     }
-    delay(500);
+    delay(1000);
 }
 // When obtain response from the publish
 void myHandler(const char *event, const char *data) {
