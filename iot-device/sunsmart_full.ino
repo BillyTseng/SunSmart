@@ -54,9 +54,11 @@ void loop() {
     if (millis() - timer > 2000) {
                         
     }
-    response = sprintf(format, longitude, latitude, uv);
-    Serial.println(response);
-    Particle.publish("sunsmart", response, PRIVATE)
+    if (digitalRead(button) == 0) { 
+        response = sprintf(format, longitude, latitude, uv);
+        Serial.println(response);
+        Particle.publish("sunsmart", response, PRIVATE);
+    }
     delay(500);
 }
 // When obtain response from the publish
