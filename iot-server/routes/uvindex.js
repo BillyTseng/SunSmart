@@ -35,20 +35,26 @@ router.get('/', function(req, res, next) {
       key : apikey
     }
   }, function(error, response, body) {
-    // If the zip_code is invalid, body will be empty. Need to check it at first.
-    if (body) {
-      var data = JSON.parse(body);
-      // Add error handling while getting an error message from weatherbit.io
-      if (data.hasOwnProperty("error")){
-        return res.status(200).send(body);
+    if (error || (response && response.statusCode != 200)) {
+      responseJson.status = "error: " + error + ', statusCode:' + (response && response.statusCode);
+      return res.status(400).send(JSON.stringify(responseJson));
+    } else {
+      // If the zip_code is invalid, body will be empty. Need to check it at first.
+      if (body) {
+        var data = JSON.parse(body);
+        // Add error handling while getting an error message from weatherbit.io
+        if (data.hasOwnProperty("error")){
+          return res.status(200).send(body);
+        } else {
+          responseJson.uv = data.data[0].uv;
+          responseJson.status = "OK";
+          // Send the response
+          res.status(200).send(JSON.stringify(responseJson));
+        }
       } else {
-        responseJson.uv = data.data[0].uv;
-        responseJson.status = "OK";
-        // Send the response
-        res.status(200).send(JSON.stringify(responseJson));
+        return res.status(200).send(JSON.stringify(responseJson));
       }
-    } else
-      return res.status(200).send(JSON.stringify(responseJson));
+    }
   });
 });
 
