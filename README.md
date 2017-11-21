@@ -18,5 +18,5 @@ The SunSmart application is an IoT enabled web application for monitoring the am
 2. `git clone` this project to AWS.
 3. `cd SunSmart/iot-server/`
 4. `npm install`
-5. `npm install express request mongoose ejs`
+5. `npm install express request mongoose ejs jwt-simple bcrypt-nodejs`
 6. `npm start`

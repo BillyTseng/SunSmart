@@ -39,6 +39,10 @@ function signUpResponse() {
     if (this.response.success) {
       // Change current location of window to response's redirect
       window.location = this.response.redirect;
+      var el = $('#ServerResponse');
+      el.removeClass('alert-danger');
+      el.addClass('alert-success');
+      responseHTML = "Sign Up Success!  Redirecting Sign in page...";
     } else {
       responseHTML += "<ol class='ServerResponse'>";
       for( key in this.response) {
@@ -47,7 +51,7 @@ function signUpResponse() {
       responseHTML += "</ol>";
     }
   } else {
-    responseHTML = "Error: " + this.response.error;
+    responseHTML = "Error: " + this.response.message;
   }
 
   // Update the response div in the webpage and make it visible
