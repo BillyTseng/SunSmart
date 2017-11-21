@@ -25,7 +25,9 @@ router.post('/signup', function(req, res, next) {
     	});
     	newUser.save( function(err, user) {
     	    if (err) { // this error could be a duplicate key error when the same email insertion tried
-    		      res.status(400).json( {success: false, message: err.errmsg } );
+              // console.log(err.errmsg); // show the db's error message. 
+              // For the safety reason, do not specify the detailed error message.
+    		      res.status(400).json( {success: false, message: "Bad Request" } );
     	    } else {
     		      res.status(201).json( {success: true, message: user.fullName + " has been created", redirect:"/signin.html" } );
     	    }
