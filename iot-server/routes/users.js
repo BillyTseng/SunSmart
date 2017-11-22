@@ -8,9 +8,26 @@ var bcrypt = require("bcrypt-nodejs");
 // Secret key for JWT
 var secret = fs.readFileSync(__dirname + '/../jwtkey').toString();
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+/* GET Authenticate user on sign in. */
+router.post('/signin', function(req, res, next) {
+  User.findOne( { email: req.body.email} , function(err, user) {
+    if (err) {
+      res.status(401).json({ error: "Database findOne error" });
+    } else if (!user) {
+      res.status(401).json({ error: "Bad Request" }); // User not exist
+    } else {
+      bcrypt.compare(req.body.password, user.passwordHash, function(err, valid) {
+        if (err) {
+            res.status(401).json({ error: "bcrypt error" });
+        } if (valid) {
+            var token = jwt.encode({email: req.body.email}, secret);
+            res.status(201).json({ token: token , fullName: user.fullName, redirect: "/home.html"});
+        } else {
+            res.status(401).json({ error: "Bad Request" });  // Wrong password
+        }
+      });
+    }
+  });
 });
 
 /* Register a new user */
