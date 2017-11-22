@@ -36,16 +36,26 @@
             <span>Devices</span>
           </div>
           <div class="card-body">
+            <table id="deviceTable" class="table table-hover table-dark table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th scope="col">Device ID</th>
+                  <th scope="col">API KEY</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
             <div id="addDeviceForm">
               <label for="deviceId">New Device ID:</label>
               <input type="text" id="deviceId" name="deviceId" col="30">
-              <button id="registerDevice" class="waves-effect waves-light btn">Register</button>
-              <button id="cancel" class="waves-effect waves-light btn">Cancel</button>
+              <a id="registerDevice" class="btn btn-outline-info" href="#" role="button">Register</a>
+              <a id="cancel" class="btn btn-outline-info" href="#" role="button">Cancel</a>
             </div>
           </div>
-          <!--<div class="card-footer" id="addDeviceControl"><a href="#!" id="addDevice">Add Device</a></div>-->
+          <div class="card-footer" id="addDeviceControl"><a href="#!" id="addDevice">Add Device</a></div>
         </div>
-        <div class='red-text text-darken-2' id="error"></div>
+        <div class="alert alert-danger" role="alert" id="error"></div>
       </div>
       <div class="col-3"></div>
     </div>

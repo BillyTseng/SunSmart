@@ -10,8 +10,7 @@ function sendReqForStatus() {
           if (status === 401) {
               window.localStorage.removeItem("token");
               window.location = "signin.html";
-          }
-          else {
+          } else {
              $("#error").html("Error: " + error);
              $("#error").show();
           }
@@ -21,30 +20,67 @@ function sendReqForStatus() {
 
 // Update page to display user's account information and list of devices with apikeys
 function statusResponse(data, status, xhr) {
-    $("#main").show();
+  $("#main").show();
 
-    $("#email").html(data.email);
-    $("#fullName").html(data.fullName);
-    $("#lastAccess").html(data.lastAccess);
+  $("#email").html(data.email);
+  $("#fullName").html(data.fullName);
+  $("#lastAccess").html(data.lastAccess);
 
-    // Add the devices to the list before the list item for the add device button (link)
-    for (var device of data.devices) {
-      $("#addDeviceForm").before("<div>ID: " +
-         device.deviceId + ", APIKEY: " + device.apikey + "</div>")
-    }
+  // Add the devices to the table
+  for (var device of data.devices) {
+    $('#deviceTable > tbody:last-child').append('<tr>' + '<td>'+ device.deviceId +'</td>' +
+                                                '<td>'+ device.apikey + '</td>' + '</tr>');
+  }
 }
 
+// Registers the specified device with the server.
+function registerDevice() {
+    $.ajax({
+        url: '/device/register',
+        type: 'POST',
+        headers: { 'x-auth': window.localStorage.getItem("token") },
+        data: { deviceId: $("#deviceId").val() },
+        responseType: 'json',
+        success: deviceRegistered,
+        error: function(jqXHR, status, error) {
+            var response = JSON.parse(jqXHR.responseText);
+            $("#error").html("Error: " + response.message);
+            $("#error").show();
+        }
+    });
+}
+
+// Device successfully register. Update the table of devices and hide the add device form
+function deviceRegistered(data, status, xhr) {
+  // Add new device to the device table
+  $('#deviceTable > tbody:last-child').append('<tr>' + '<td>'+ $("#deviceId").val() +'</td>' +
+                                             '<td>'+ data["apikey"] + '</td>' + '</tr>');
+  hideAddDeviceForm();
+}
+
+// Show add device form and hide the add device button (really a link)
+function showAddDeviceForm() {
+   $("#deviceId").val("");           // Clear the input for the device ID
+   $("#addDeviceControl").hide();    // Hide the add device link
+   $("#addDeviceForm").slideDown();  // Show the add device form
+}
+
+// Hides the add device form and shows the add device button (link)
+function hideAddDeviceForm() {
+   $("#addDeviceControl").show();  // Hide the add device link
+   $("#addDeviceForm").slideUp();  // Show the add device form
+   $("#error").hide();
+}
 // Handle authentication on page load
 $(function() {
   if( !window.localStorage.getItem('token') ) {
     window.location = "signin.html";
-  }
-  else {
+  } else {
     sendReqForStatus();
   }
 
   // Register event listeners
-  //$("#addDevice").click(showAddDeviceForm);
-  //$("#registerDevice").click(registerDevice);
-  //$("#cancel").click(hideAddDeviceForm);
+  $("#addDevice").click(showAddDeviceForm);
+  $("#registerDevice").click(registerDevice);
+  $("#cancel").click(hideAddDeviceForm);
 });
