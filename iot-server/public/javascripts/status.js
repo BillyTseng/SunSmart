@@ -28,7 +28,20 @@ function statusResponse(data, status, xhr) {
 
   // Add the devices to the table
   for (var device of data.devices) {
-    $('#deviceTable > tbody:last-child').append('<tr>' + '<td>'+ device.deviceId +'</td>' +
+    var dropDownHtml = "" +
+      '<div class="btn-group d-flex justify-content-center">' +
+        '<button type="button" class="btn btn-secondary dropdown-toggle"' +
+        ' data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+          'Actions' +
+        '</button>' +
+        '<div class="dropdown-menu">' +
+          '<a class="dropdown-item" href="#">Edit</a>' +
+          '<a class="dropdown-item" href="#">Delete</a>' +
+        '</div>' +
+      '</div>';
+
+    $('#deviceTable > tbody:last-child').append('<tr>' + '<td>'+ dropDownHtml + '</td>' +
+                                                '<td>'+ device.deviceId + '</td>' +
                                                 '<td>'+ device.apikey + '</td>' + '</tr>');
   }
 }
@@ -52,9 +65,22 @@ function registerDevice() {
 
 // Device successfully register. Update the table of devices and hide the add device form
 function deviceRegistered(data, status, xhr) {
+  var dropDownHtml = "" +
+    '<div class="btn-group d-flex justify-content-center">' +
+      '<button type="button" class="btn btn-secondary dropdown-toggle"' +
+      ' data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+        'Actions' +
+      '</button>' +
+      '<div class="dropdown-menu">' +
+        '<a class="dropdown-item" href="#">Edit</a>' +
+        '<a class="dropdown-item" href="#">Delete</a>' +
+      '</div>' +
+    '</div>';
+
   // Add new device to the device table
-  $('#deviceTable > tbody:last-child').append('<tr>' + '<td>'+ $("#deviceId").val() +'</td>' +
-                                             '<td>'+ data["apikey"] + '</td>' + '</tr>');
+  $('#deviceTable > tbody:last-child').append('<tr>' + '<td>'+ dropDownHtml + '</td>' +
+                                            '<td>'+ $("#deviceId").val() +'</td>' +
+                                            '<td>'+ data["apikey"] + '</td>' + '</tr>');
   hideAddDeviceForm();
 }
 
