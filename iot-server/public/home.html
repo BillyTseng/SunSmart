@@ -1,23 +1,63 @@
-<!doctype html>
+<p <!doctype html>
 <html lang="en">
   <head>
     <title>Hello, Home!</title>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+    <link href="stylesheets/homestyle.css" rel="stylesheet">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
   </head>
   <body>
-    <h1>Hello, Home!</h1>
-    <a id="signout" class="btn btn-outline-danger" href="#" role="button">Sign out</a>
+    <div class="row">
+      <div class="col-3"></div>
+      <div class="col-6">
+        <div class="row">
+          <div class="col">
+            <a href="home.html">SunSmart - Home!</a>
+          </div>
+          <div class="col">
+            <a id="signout" class="btn btn-outline-danger float-right" href="#" role="button">Sign out</a>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span>Account details</span>
+          </div>
+          <div class="card-body">
+            <p>Email: <span id="email"></span></p>
+            <p>Name: <span id="fullName"></span></p>
+            <p>Last Access: <span id="lastAccess"></span></p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span>Devices</span>
+          </div>
+          <div class="card-body">
+            <div id="addDeviceForm">
+              <label for="deviceId">New Device ID:</label>
+              <input type="text" id="deviceId" name="deviceId" col="30">
+              <button id="registerDevice" class="waves-effect waves-light btn">Register</button>
+              <button id="cancel" class="waves-effect waves-light btn">Cancel</button>
+            </div>
+          </div>
+          <!--<div class="card-footer" id="addDeviceControl"><a href="#!" id="addDevice">Add Device</a></div>-->
+        </div>
+        <div class='red-text text-darken-2' id="error"></div>
+      </div>
+      <div class="col-3"></div>
+    </div>
+
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <!--<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>-->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
 	  <script src="javascripts/signout.js" defer></script>
+    <script src="javascripts/status.js" defer></script>
   </body>
 </html>
