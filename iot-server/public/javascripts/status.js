@@ -20,8 +20,6 @@ function sendReqForStatus() {
 
 // Update page to display user's account information and list of devices with apikeys
 function statusResponse(data, status, xhr) {
-  $("#main").show();
-
   $("#email").html(data.email);
   $("#fullName").html(data.fullName);
   $("#lastAccess").html(data.lastAccess);
@@ -97,6 +95,64 @@ function hideAddDeviceForm() {
    $("#addDeviceForm").slideUp();  // Show the add device form
    $("#error").hide();
 }
+
+function showEditUserInfo() {
+  var emailText = $("#email").text();
+  var fullNameText = $("#fullName").text();
+  $("#editUserInfo").hide();
+  $("#confirmEditUserInfo").show();
+  $("#email").html('<input type="email" col="50" value=' + '"' + emailText + '">');
+  $("#fullName").html('<input type="email" col="50" value=' + '"' + fullNameText + '">');
+  $("#confirmEditUserInfo a:contains('Cancel')").click(
+    {
+      orgEmail: emailText,
+      orgName: fullNameText
+    }, abortEditUserInfo);
+
+  // User press done, PUT new user info to server.
+  $("#confirmEditUserInfo a:contains('Done')").click(
+    {
+      orgEmail: emailText
+    }, editUserInfo);
+}
+
+function abortEditUserInfo(event) {
+  $("#editUserInfo").show();
+  $("#confirmEditUserInfo").hide();
+  $("#email").html(event.data.orgEmail);
+  $("#fullName").html(event.data.orgName);
+}
+
+function editUserInfo(event) {
+  var inputEmail = $("#email input").val();
+  var inputName = $("#fullName input").val();
+
+  $.ajax({
+    url: '/users/edit',
+    type: 'PUT',
+    headers: { 'x-auth': window.localStorage.getItem("token") },
+    data: { email: inputEmail, fullName: inputName },
+    responseType: 'json',
+    success: function(data, status, xhr) {
+      // If email is revised, have to re-login to update token.
+      if (event.data.orgEmail !== inputEmail) {
+        // The signOut() is in signout.js
+        signOut();
+      } else {
+        $("#editUserInfo").show();
+        $("#confirmEditUserInfo").hide();
+        $("#email").html(inputEmail);
+        $("#fullName").html(inputName);
+      }
+    },
+    error: function(jqXHR, status, error) {
+      var response = JSON.parse(jqXHR.responseText);
+      $("#error").html("Error: " + response.message);
+      $("#error").show();
+    }
+  });
+}
+
 // Handle authentication on page load
 $(function() {
   if( !window.localStorage.getItem('token') ) {
@@ -109,4 +165,5 @@ $(function() {
   $("#addDevice").click(showAddDeviceForm);
   $("#registerDevice").click(registerDevice);
   $("#cancel").click(hideAddDeviceForm);
+  $("#editUserInfo").click(showEditUserInfo);
 });

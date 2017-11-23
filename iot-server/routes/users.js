@@ -54,7 +54,7 @@ router.post('/signup', function(req, res, next) {
 });
 
 /* GET status */
-router.get("/status", function(req, res) {
+router.get("/status", function(req, res, next) {
   // Check if the X-Auth header is set
   if (!req.headers["x-auth"]) {
     return res.status(401).json({error: "Missing X-Auth header"});
@@ -103,6 +103,58 @@ router.get("/status", function(req, res) {
     });
   } catch (ex) {
     res.status(401).json({ error: "Invalid JWT" });
+  }
+});
+
+router.put("/edit", function(req, res) {
+  // Check if the X-Auth header is set
+  if (!req.headers["x-auth"]) {
+    return res.status(401).json({error: "Missing X-Auth header"});
+  }
+
+  // X-Auth should contain the token value
+  var token = req.headers["x-auth"];
+
+  // try decoding
+  try {
+    var decoded = jwt.decode(token, secret);
+
+    // Find a user based on decoded token
+    User.findOne({email:decoded.email}, function (err, user) {
+      if (err) {
+        return res.json({error : err});
+      } else {
+        if (!user) {
+          return res.json({error : "User not found"});
+        } else {
+          if (user.email !== req.body.email) {
+            // Replace old email with req.body.email in Devices collections.
+            Device.update({ userEmail: user.email },
+               { userEmail: req.body.email },
+               { multi: true },
+               function(err, status) {
+                  // console.log("Documents updated: " + status.nModified);
+            });
+            // Update user's email.
+            user.email = req.body.email;
+          }
+          // Update user's name.
+          user.fullName = req.body.fullName;
+          // Replace existing user fields with updated user
+          User.findByIdAndUpdate(user._id, user, function(err, user) {
+              if (err) {
+                  res.status(400).send(err);
+              } else if (user) {
+                   res.sendStatus(204);
+              } else {
+                   res.sendStatus(404);
+              }
+          });
+        }
+      }
+    });
+  } catch (ex) {
+    res.status(401).json({ error: ex.message });
   }
 });
 
