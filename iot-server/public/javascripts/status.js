@@ -32,16 +32,30 @@ function statusResponse(data, status, xhr) {
         ' data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
           'Actions' +
         '</button>' +
-        '<div class="dropdown-menu">' +
-          '<a class="dropdown-item" href="#">Edit</a>' +
-          '<a class="dropdown-item" href="#">Delete</a>' +
+        '<div class="dropdown-menu" id="' + device.deviceId + '">' +
+          '<a class="dropdown-item">Edit</a>' +
+          '<a class="dropdown-item">Delete</a>' +
         '</div>' +
       '</div>';
 
     $('#deviceTable > tbody:last-child').append('<tr>' + '<td>'+ dropDownHtml + '</td>' +
                                                 '<td>'+ device.deviceId + '</td>' +
                                                 '<td>'+ device.apikey + '</td>' + '</tr>');
+
+    $("#" + device.deviceId + " a:contains('Delete')").click(
+      {deviceId: device.deviceId}, deviceIdDelete);
+
+    $("#" + device.deviceId + " a:contains('Edit')").click(
+      {deviceId: device.deviceId}, deviceIdEdit);
   }
+}
+
+function deviceIdEdit(event) {
+  console.log(event.data.deviceId + ": Edit");
+}
+
+function deviceIdDelete(event) {
+  console.log(event.data.deviceId + ": Delete");
 }
 
 // Registers the specified device with the server.
@@ -63,22 +77,30 @@ function registerDevice() {
 
 // Device successfully register. Update the table of devices and hide the add device form
 function deviceRegistered(data, status, xhr) {
+  var deviceIdValue = $("#deviceId").val();
   var dropDownHtml = "" +
     '<div class="btn-group d-flex justify-content-center">' +
       '<button type="button" class="btn btn-secondary dropdown-toggle"' +
       ' data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
         'Actions' +
       '</button>' +
-      '<div class="dropdown-menu">' +
-        '<a class="dropdown-item" href="#">Edit</a>' +
-        '<a class="dropdown-item" href="#">Delete</a>' +
+      '<div class="dropdown-menu" id="' + deviceIdValue + '">' +
+        '<a class="dropdown-item">Edit</a>' +
+        '<a class="dropdown-item">Delete</a>' +
       '</div>' +
     '</div>';
 
   // Add new device to the device table
   $('#deviceTable > tbody:last-child').append('<tr>' + '<td>'+ dropDownHtml + '</td>' +
-                                            '<td>'+ $("#deviceId").val() +'</td>' +
+                                            '<td>'+ deviceIdValue +'</td>' +
                                             '<td>'+ data["apikey"] + '</td>' + '</tr>');
+
+  $("#" + deviceIdValue + " a:contains('Delete')").click(
+    {deviceId: deviceIdValue}, deviceIdDelete);
+
+  $("#" + deviceIdValue + " a:contains('Edit')").click(
+    {deviceId: deviceIdValue}, deviceIdEdit);
+
   hideAddDeviceForm();
 }
 

@@ -1,3 +1,7 @@
 #addDeviceForm, #confirmEditUserInfo, #error {
    display: none;
 }
+
+a, button {
+  cursor: pointer;
+}
