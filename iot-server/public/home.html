@@ -55,11 +55,13 @@
             <div id="addDeviceForm">
               <label for="deviceId">New Device ID:</label>
               <input type="text" id="deviceId" name="deviceId" col="30">
-              <a id="registerDevice" class="btn btn-outline-info" href="#" role="button">Register</a>
-              <a id="cancel" class="btn btn-outline-info" href="#" role="button">Cancel</a>
+              <button id="registerDevice" class="btn btn-primary btn-sm" role="button">Register</button>
+              <button id="cancel" class="btn btn-danger btn-sm" role="button">Cancel</button>
             </div>
           </div>
-          <div class="card-footer" id="addDeviceControl"><a href="#!" id="addDevice">Add Device</a></div>
+          <div class="card-footer" id="addDeviceControl">
+            <button id="addDevice" class="btn btn-outline-warning btn-sm" role="button">Add Device</button>
+          </div>
         </div>
         <div class="alert alert-danger" role="alert" id="error"></div>
       </div>
