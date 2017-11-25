@@ -32,15 +32,17 @@ function statusResponse(data, status, xhr) {
         ' data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
           'Actions' +
         '</button>' +
-        '<div class="dropdown-menu" id="' + device.deviceId + '">' +
+        '<div class="dropdown-menu">' +
           '<a class="dropdown-item">Edit</a>' +
           '<a class="dropdown-item">Delete</a>' +
         '</div>' +
       '</div>';
 
-    $('#deviceTable > tbody:last-child').append('<tr>' + '<td>'+ dropDownHtml + '</td>' +
-                                                '<td>'+ device.deviceId + '</td>' +
-                                                '<td>'+ device.apikey + '</td>' + '</tr>');
+    $('#deviceTable > tbody:last-child').append(
+      '<tr id="' + device.deviceId + '">' +
+      '<td>'+ dropDownHtml + '</td>' +
+      '<td>'+ device.deviceId + '</td>' +
+      '<td>'+ device.apikey + '</td>' + '</tr>');
 
     $("#" + device.deviceId + " a:contains('Delete')").click(
       {deviceId: device.deviceId}, deviceIdDelete);
@@ -54,8 +56,25 @@ function deviceIdEdit(event) {
   console.log(event.data.deviceId + ": Edit");
 }
 
+// Delete device by deviceId
 function deviceIdDelete(event) {
-  console.log(event.data.deviceId + ": Delete");
+  // console.log(event.data.deviceId + ": Delete");
+
+  $.ajax({
+      url: '/device/delete/' + event.data.deviceId,
+      type: 'DELETE',
+      headers: { 'x-auth': window.localStorage.getItem("token") },
+      responseType: 'json',
+      success: function() {
+        // Remove the row of deviceId from the web page's table.
+        $('tr#' + event.data.deviceId).remove();
+       },
+      error: function(jqXHR, status, error) {
+          var response = JSON.parse(jqXHR.responseText);
+          $("#error").html("Error: " + response.message);
+          $("#error").show();
+      }
+  });
 }
 
 // Registers the specified device with the server.
@@ -84,14 +103,15 @@ function deviceRegistered(data, status, xhr) {
       ' data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
         'Actions' +
       '</button>' +
-      '<div class="dropdown-menu" id="' + deviceIdValue + '">' +
+      '<div class="dropdown-menu">' +
         '<a class="dropdown-item">Edit</a>' +
         '<a class="dropdown-item">Delete</a>' +
       '</div>' +
     '</div>';
 
   // Add new device to the device table
-  $('#deviceTable > tbody:last-child').append('<tr>' + '<td>'+ dropDownHtml + '</td>' +
+  $('#deviceTable > tbody:last-child').append('<tr id="' + deviceIdValue + '">' +
+                                            '<td>'+ dropDownHtml + '</td>' +
                                             '<td>'+ deviceIdValue +'</td>' +
                                             '<td>'+ data["apikey"] + '</td>' + '</tr>');
 

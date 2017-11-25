@@ -118,4 +118,42 @@ router.post('/register', function(req, res, next) {
     }
 });
 
+// DELETE a device by deviceId
+router.delete('/delete/:deviceId', function(req, res, next) {
+  var deviceId = req.params.deviceId;
+
+  var responseJson = {
+      message : "",
+  };
+
+  // Check if the X-Auth header is set
+  if (!req.headers["x-auth"]) {
+    responseJson.message = "Missing X-Auth header.";
+    return res.status(401).json(responseJson);
+  }
+  // X-Auth should contain the token value
+  var token = req.headers["x-auth"];
+
+  // try decoding
+  try {
+    var decoded = jwt.decode(token, secret);
+
+    // See if device is already registered
+    Device.findOneAndRemove({ deviceId: deviceId }, function(err, device) {
+         if (device === null) {
+            // console.log("No device deleted");
+            responseJson.message = "No device deleted";
+            res.status(400).json(responseJson);
+         } else {
+            // console.log("Removed device " + device.deviceId);
+            responseJson.message = "Removed device " + device.deviceId;
+            res.status(201).json(responseJson);
+         }
+      });
+  } catch (ex) {
+    responseJson.message = "Authentication error: " + ex.message;
+    res.status(401).json(responseJson);
+  }
+});
+
 module.exports = router;
