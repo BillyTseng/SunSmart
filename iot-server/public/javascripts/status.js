@@ -79,19 +79,24 @@ function deviceIdDelete(event) {
 
 // Registers the specified device with the server.
 function registerDevice() {
-    $.ajax({
-        url: '/device/register',
-        type: 'POST',
-        headers: { 'x-auth': window.localStorage.getItem("token") },
-        data: { deviceId: $("#deviceId").val() },
-        responseType: 'json',
-        success: deviceRegistered,
-        error: function(jqXHR, status, error) {
-            var response = JSON.parse(jqXHR.responseText);
-            $("#error").html("Error: " + response.message);
-            $("#error").show();
-        }
-    });
+  var deviceIdVal = $("#deviceId").val();
+  if(/^[a-zA-Z0-9-_]*$/.test(deviceIdVal) == false) {
+    return alert('Your Device ID contains illegal characters.');
+  }
+
+  $.ajax({
+    url: '/device/register',
+    type: 'POST',
+    headers: { 'x-auth': window.localStorage.getItem("token") },
+    data: { deviceId: deviceIdVal },
+    responseType: 'json',
+    success: deviceRegistered,
+    error: function(jqXHR, status, error) {
+        var response = JSON.parse(jqXHR.responseText);
+        $("#error").html("Error: " + response.message);
+        $("#error").show();
+    }
+  });
 }
 
 // Device successfully register. Update the table of devices and hide the add device form
