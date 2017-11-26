@@ -155,4 +155,45 @@ router.delete('/delete/:deviceId', function(req, res, next) {
   }
 });
 
+router.put("/edit", function(req, res) {
+  // Check if the X-Auth header is set
+  if (!req.headers["x-auth"]) {
+    return res.status(401).json({error: "Missing X-Auth header"});
+  }
+
+  // X-Auth should contain the token value
+  var token = req.headers["x-auth"];
+
+  // try decoding
+  try {
+    var decoded = jwt.decode(token, secret);
+
+    // Find a user based on req.body.deviceId
+    Device.findOne({ deviceId: req.body.deviceId }, function (err, device) {
+      if (err) {
+        return res.json({error : err});
+      } else {
+        if (!device) {
+          return res.json({error : "Device not found"});
+        } else {
+          // Update device's ID with newDeviceId.
+          device.deviceId = req.body.newDeviceId;
+          // Replace existing deviceId field with updated deviceId
+          Device.findByIdAndUpdate(device._id, device, function(err, device) {
+              if (err) {
+                  res.status(400).send(err);
+              } else if (device) {
+                   res.sendStatus(204);
+              } else {
+                   res.sendStatus(404);
+              }
+          });
+        }
+      }
+    });
+  } catch (ex) {
+    res.status(401).json({ error: ex.message });
+  }
+});
+
 module.exports = router;

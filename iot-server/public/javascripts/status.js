@@ -18,6 +18,37 @@ function sendReqForStatus() {
     });
 }
 
+function composeRowOfDeviceTable(deviceId, apikey) {
+  var dropDownHtml = "" +
+    '<div class="btn-group justify-content-center">' +
+      '<button type="button" class="btn btn-secondary dropdown-toggle"' +
+      ' data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+        'Actions' +
+      '</button>' +
+      '<div class="dropdown-menu">' +
+        '<a class="dropdown-item">Edit</a>' +
+        '<a class="dropdown-item">Delete</a>' +
+      '</div>' +
+    '</div>';
+
+  var editdeviceIdHtml = "" +
+    '<div class="edit-device-id justify-content-center">' +
+    '<button class="btn btn-primary btn-sm" role="button">&nbspDone&nbsp</button>' +
+    '<button class="btn btn-danger btn-sm" role="button">Cancel</button></div>';
+
+  $('#deviceTable > tbody:last-child').append(
+    '<tr id="' + deviceId + '">' +
+    '<td>'+ dropDownHtml + editdeviceIdHtml + '</td>' +
+    '<td>'+ deviceId + '</td>' +
+    '<td>'+ apikey + '</td>' + '</tr>');
+
+  $("#" + deviceId + " a:contains('Delete')").click(
+    {deviceId: deviceId}, deviceIdDelete);
+
+  $("#" + deviceId + " a:contains('Edit')").click(
+    {deviceId: deviceId}, showEditDeviceId);
+}
+
 // Update page to display user's account information and list of devices with apikeys
 function statusResponse(data, status, xhr) {
   $("#email").html(data.email);
@@ -26,34 +57,63 @@ function statusResponse(data, status, xhr) {
 
   // Add the devices to the table
   for (var device of data.devices) {
-    var dropDownHtml = "" +
-      '<div class="btn-group d-flex justify-content-center">' +
-        '<button type="button" class="btn btn-secondary dropdown-toggle"' +
-        ' data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
-          'Actions' +
-        '</button>' +
-        '<div class="dropdown-menu">' +
-          '<a class="dropdown-item">Edit</a>' +
-          '<a class="dropdown-item">Delete</a>' +
-        '</div>' +
-      '</div>';
-
-    $('#deviceTable > tbody:last-child').append(
-      '<tr id="' + device.deviceId + '">' +
-      '<td>'+ dropDownHtml + '</td>' +
-      '<td>'+ device.deviceId + '</td>' +
-      '<td>'+ device.apikey + '</td>' + '</tr>');
-
-    $("#" + device.deviceId + " a:contains('Delete')").click(
-      {deviceId: device.deviceId}, deviceIdDelete);
-
-    $("#" + device.deviceId + " a:contains('Edit')").click(
-      {deviceId: device.deviceId}, deviceIdEdit);
+    // Populate each device into table.
+    composeRowOfDeviceTable(device.deviceId, device.apikey);
   }
 }
 
-function deviceIdEdit(event) {
-  console.log(event.data.deviceId + ": Edit");
+function showEditDeviceId(event) {
+  var deviceId = event.data.deviceId;
+  var deviceIdElement = $("#" + deviceId + " td:eq(1)"); // 2nd td is deviceId
+  var deviceIdText = deviceIdElement.text();
+  deviceIdElement.html('<input type="text" col="50" value=' + '"' + deviceIdText + '">');
+  // console.log(deviceId + ": Edit");
+
+  $("#" + deviceId + " .btn-group").hide();
+  $("#" + deviceId + " .edit-device-id").show();
+
+  $("#" + deviceId + " button:contains('Done')").click(
+    {deviceId: deviceId}, editDeviceId);
+
+  $("#" + deviceId + " button:contains('Cancel')").click(function() {
+    // console.log(deviceId + ": Cancel");
+    $("#" + deviceId + " .btn-group").show();
+    $("#" + deviceId + " .edit-device-id").hide();
+    deviceIdElement.html(deviceId);
+  });
+}
+
+function editDeviceId(event) {
+  var deviceId = event.data.deviceId;
+  var deviceIdElement = $("#" + deviceId + " td:eq(1) input"); // 2nd td is deviceId
+  var newDeviceIdText = deviceIdElement.val();
+
+  if (isDeviceIdLegal(newDeviceIdText)) {
+    $.ajax({
+      url: '/device/edit',
+      type: 'PUT',
+      headers: { 'x-auth': window.localStorage.getItem("token") },
+      data: { deviceId: deviceId, newDeviceId: newDeviceIdText },
+      responseType: 'json',
+      success: function() {
+        // Update element's id
+        // console.log("ajax success: " + newDeviceIdText);
+        $("#" + deviceId).attr('id',newDeviceIdText);
+
+        // Toogle UI
+        $("#" + newDeviceIdText + " .btn-group").show();
+        $("#" + newDeviceIdText + " .edit-device-id").hide();
+
+        // Replace input area with text.
+        $("#" + newDeviceIdText + " td:eq(1)").html(newDeviceIdText);
+      },
+      error: function(jqXHR, status, error) {
+        var response = JSON.parse(jqXHR.responseText);
+        $("#error").html("Error: " + response.message);
+        $("#error").show();
+      }
+    });
+  }
 }
 
 // Delete device by deviceId
@@ -77,54 +137,43 @@ function deviceIdDelete(event) {
   });
 }
 
+function isDeviceIdLegal(val) {
+  if(/^[a-zA-Z0-9-_]*$/.test(val) == false) {
+    alert("Your Device ID contains illegal characters." +
+      " We don't accept space and special characters");
+    return false;
+  } else {
+    return true;
+  }
+}
+
 // Registers the specified device with the server.
 function registerDevice() {
   var deviceIdVal = $("#deviceId").val();
-  if(/^[a-zA-Z0-9-_]*$/.test(deviceIdVal) == false) {
-    return alert('Your Device ID contains illegal characters.');
-  }
 
-  $.ajax({
-    url: '/device/register',
-    type: 'POST',
-    headers: { 'x-auth': window.localStorage.getItem("token") },
-    data: { deviceId: deviceIdVal },
-    responseType: 'json',
-    success: deviceRegistered,
-    error: function(jqXHR, status, error) {
-        var response = JSON.parse(jqXHR.responseText);
-        $("#error").html("Error: " + response.message);
-        $("#error").show();
-    }
-  });
+  if (isDeviceIdLegal(deviceIdVal)) {
+    $.ajax({
+      url: '/device/register',
+      type: 'POST',
+      headers: { 'x-auth': window.localStorage.getItem("token") },
+      data: { deviceId: deviceIdVal },
+      responseType: 'json',
+      success: deviceRegistered,
+      error: function(jqXHR, status, error) {
+          var response = JSON.parse(jqXHR.responseText);
+          $("#error").html("Error: " + response.message);
+          $("#error").show();
+      }
+    });
+  }
 }
 
 // Device successfully register. Update the table of devices and hide the add device form
 function deviceRegistered(data, status, xhr) {
   var deviceIdValue = $("#deviceId").val();
-  var dropDownHtml = "" +
-    '<div class="btn-group d-flex justify-content-center">' +
-      '<button type="button" class="btn btn-secondary dropdown-toggle"' +
-      ' data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
-        'Actions' +
-      '</button>' +
-      '<div class="dropdown-menu">' +
-        '<a class="dropdown-item">Edit</a>' +
-        '<a class="dropdown-item">Delete</a>' +
-      '</div>' +
-    '</div>';
 
-  // Add new device to the device table
-  $('#deviceTable > tbody:last-child').append('<tr id="' + deviceIdValue + '">' +
-                                            '<td>'+ dropDownHtml + '</td>' +
-                                            '<td>'+ deviceIdValue +'</td>' +
-                                            '<td>'+ data["apikey"] + '</td>' + '</tr>');
-
-  $("#" + deviceIdValue + " a:contains('Delete')").click(
-    {deviceId: deviceIdValue}, deviceIdDelete);
-
-  $("#" + deviceIdValue + " a:contains('Edit')").click(
-    {deviceId: deviceIdValue}, deviceIdEdit);
+  // Add registered device into table.
+  composeRowOfDeviceTable(deviceIdValue, data["apikey"]);
 
   hideAddDeviceForm();
 }

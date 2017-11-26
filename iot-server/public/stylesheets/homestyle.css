@@ -1,4 +1,4 @@
-#addDeviceForm, #confirmEditUserInfo, #error {
+#addDeviceForm, #confirmEditUserInfo, #error, .edit-device-id {
    display: none;
 }
 
