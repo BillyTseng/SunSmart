@@ -137,16 +137,6 @@ function deviceIdDelete(event) {
   });
 }
 
-function isDeviceIdLegal(val) {
-  if(/^[a-zA-Z0-9-_]*$/.test(val) == false) {
-    alert("Your Device ID contains illegal characters." +
-      " We don't accept space and special characters");
-    return false;
-  } else {
-    return true;
-  }
-}
-
 // Registers the specified device with the server.
 function registerDevice() {
   var deviceIdVal = $("#deviceId").val();
@@ -223,30 +213,32 @@ function editUserInfo(event) {
   var inputEmail = $("#email input").val();
   var inputName = $("#fullName input").val();
 
-  $.ajax({
-    url: '/users/edit',
-    type: 'PUT',
-    headers: { 'x-auth': window.localStorage.getItem("token") },
-    data: { email: inputEmail, fullName: inputName },
-    responseType: 'json',
-    success: function(data, status, xhr) {
-      // If email is revised, have to re-login to update token.
-      if (event.data.orgEmail !== inputEmail) {
-        // The signOut() is in utility.js
-        signOut();
-      } else {
-        $("#editUserInfo").show();
-        $("#confirmEditUserInfo").hide();
-        $("#email").html(inputEmail);
-        $("#fullName").html(inputName);
+  if (isEmailLegal(inputEmail)) {
+    $.ajax({
+      url: '/users/edit',
+      type: 'PUT',
+      headers: { 'x-auth': window.localStorage.getItem("token") },
+      data: { email: inputEmail, fullName: inputName },
+      responseType: 'json',
+      success: function(data, status, xhr) {
+        // If email is revised, have to re-login to update token.
+        if (event.data.orgEmail !== inputEmail) {
+          // The signOut() is in utility.js
+          signOut();
+        } else {
+          $("#editUserInfo").show();
+          $("#confirmEditUserInfo").hide();
+          $("#email").html(inputEmail);
+          $("#fullName").html(inputName);
+        }
+      },
+      error: function(jqXHR, status, error) {
+        var response = JSON.parse(jqXHR.responseText);
+        $("#error").html("Error: " + response.message);
+        $("#error").show();
       }
-    },
-    error: function(jqXHR, status, error) {
-      var response = JSON.parse(jqXHR.responseText);
-      $("#error").html("Error: " + response.message);
-      $("#error").show();
-    }
-  });
+    });
+  }
 }
 
 // Handle authentication on page load

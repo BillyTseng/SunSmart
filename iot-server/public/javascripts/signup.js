@@ -12,6 +12,10 @@ function sendReqForSignup() {
   var password = document.getElementById("password").value;
   var passwordConfirm = document.getElementById("passwordConfirm").value;
 
+  if (!isEmailLegal(email)) {
+    return;
+  }
+
   if (password != passwordConfirm) {
     showMsg("<p>Password does not match</p>");
     return;

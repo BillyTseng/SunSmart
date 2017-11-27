@@ -4,6 +4,10 @@ function sendReqForSignin() {
   var email = document.getElementById("email").value;
   var password = document.getElementById("password").value;
 
+  if (!isEmailLegal(email)) {
+    return;
+  }
+  
   // Create the XMLHttpRequest object, register the load event
   // listener, and set the response type to JSON
   var xhr = new XMLHttpRequest();
