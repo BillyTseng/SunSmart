@@ -16,6 +16,10 @@ function sendReqForSignup() {
     return;
   }
 
+  if (!password || 0 === password.length) {
+    return alert("Error: password field is blank!!");
+  }
+
   if (password != passwordConfirm) {
     showMsg("<p>Password does not match</p>");
     return;
