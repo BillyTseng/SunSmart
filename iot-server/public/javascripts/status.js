@@ -232,7 +232,7 @@ function editUserInfo(event) {
     success: function(data, status, xhr) {
       // If email is revised, have to re-login to update token.
       if (event.data.orgEmail !== inputEmail) {
-        // The signOut() is in signout.js
+        // The signOut() is in utility.js
         signOut();
       } else {
         $("#editUserInfo").show();
