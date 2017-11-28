@@ -23,7 +23,7 @@ function isEmailLegal(val) {
 
 // chsck device ID is legal.
 function isDeviceIdLegal(val) {
-  if(/^[a-zA-Z0-9-_]*$/.test(val) == false) {
+  if(/^[a-zA-Z0-9-_]+$/.test(val) == false) {
     alert("Your Device ID contains illegal characters." +
       " We don't accept space and special characters");
     return false;
