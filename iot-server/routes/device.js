@@ -28,26 +28,37 @@ router.post('/post', function(req, res, next) {
       message: ""
   };
   // DEBUG message: enumerate request’s body and print out key and value
-  for( var key in req.body) {
+  /*for( var key in req.body) {
       console.log( key + ":" + req.body[key] );
-  }
+  }*/
 
-  var newRecord = new Record({
-    deviceId: req.body.deviceId,
-    longitude: req.body.longitude,
-    latitude: req.body.latitude,
-    uv: req.body.uv
-  });
-
-  newRecord.save(function(err, newRecord) {
-    if (err) {
+  // Check the deviceId and apikey are matched.
+  Device.findOne({
+      deviceId: req.body.deviceId, apikey: req.body.apikey
+    }, function(err, device) {
+    if (device === null) {
       response.status = "Error";
-      response.message = err;
-      res.status(400).send(JSON.stringify(response));
+      response.message = "DeviceId or apikey is not correct.";
+      res.status(401).send(JSON.stringify(response));
     } else {
-      response.status = "OK";
-      response.message = "Data saved in db with object ID " + newRecord._id + ".";
-      res.status(201).send(JSON.stringify(response));
+      var newRecord = new Record({
+        deviceId: req.body.deviceId,
+        longitude: req.body.longitude,
+        latitude: req.body.latitude,
+        uv: req.body.uv
+      });
+
+      newRecord.save(function(err, newRecord) {
+        if (err) {
+          response.status = "Error";
+          response.message = err;
+          res.status(400).send(JSON.stringify(response));
+        } else {
+          response.status = "OK";
+          response.message = "Data saved in db with object ID " + newRecord._id + ".";
+          res.status(201).send(JSON.stringify(response));
+        }
+      });
     }
   });
 });

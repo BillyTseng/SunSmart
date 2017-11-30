@@ -1,5 +1,5 @@
 function postJson() {
-  var url = "/record/create";
+  var url = "/device/post";
   var json = document.getElementById("jsonData").value;
 
   var xhr = new XMLHttpRequest();

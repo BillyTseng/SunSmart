@@ -14,7 +14,7 @@ void loop() {
     // read button and if it is pressed
     if (digitalRead(button) == 0) { // pulldown resistor, 0: Pressed
         // Construct json string
-        String data = String("{ \"longitude\": -110.950258, \"latitude\": 32.227698, \"uv\": 222 }");
+        String data = String("{ \"apikey\": \"Your_apikey\", \"longitude\": -110.950258, \"latitude\": 32.227698, \"uv\": 222 }");
         // Log to serial console
         Serial.println("button pressed!");
         // Publish to webhook

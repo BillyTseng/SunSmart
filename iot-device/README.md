@@ -15,6 +15,7 @@
 ```JSON
 {
   "deviceId": "{{PARTICLE_DEVICE_ID}}",
+  "apikey": "{{apikey}}",
   "longitude": "{{longitude}}",
   "latitude": "{{latitude}}",
   "uv": "{{uv}}",
