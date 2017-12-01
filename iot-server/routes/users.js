@@ -5,6 +5,7 @@ var jwt = require("jwt-simple");
 var User = require("../models/users");
 var Device = require("../models/device");
 var bcrypt = require("bcrypt-nodejs");
+var nodemailer = require("nodemailer");
 
 // Secret key for JWT
 var secret = fs.readFileSync(__dirname + '/../jwtkey').toString();
@@ -106,7 +107,7 @@ router.get("/status", function(req, res, next) {
   }
 });
 
-router.put("/edit", function(req, res) {
+router.put("/edit", function(req, res, next) {
   // Check if the X-Auth header is set
   if (!req.headers["x-auth"]) {
     return res.status(401).json({error: "Missing X-Auth header"});
@@ -156,6 +157,49 @@ router.put("/edit", function(req, res) {
   } catch (ex) {
     res.status(401).json({ error: ex.message });
   }
+});
+
+router.get("/sendemail", function(req, res, next) {
+
+  var array = fs.readFileSync(__dirname + '/../3rd-party-apikeys/gmail').toString().split('\n');
+  var sender = array[0];
+  var clientId = array[1];
+  var clientSecret = array[2];
+  var refreshToken = array[3];
+  var accessToken = array[4];
+  var receiver = "your_receiver_email";
+
+  let transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: {
+          type: 'OAuth2',
+          user: sender,
+          clientId: clientId,
+          clientSecret: clientSecret,
+          refreshToken: refreshToken,
+          accessToken: accessToken
+      }
+  });
+
+  var mailOptions = {
+    from: sender,
+    to: receiver,
+    subject: "Test Email",
+    generateTextFromHTML: true,
+    html: "<b>Hello worldTest</b>"
+  };
+
+  transporter.sendMail(mailOptions, function(error, response) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log(response);
+    }
+    transporter.close();
+  });
+
 });
 
 module.exports = router;

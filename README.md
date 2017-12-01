@@ -5,6 +5,8 @@ The SunSmart application is an IoT enabled web application for monitoring the am
 ### Get third party API key.
 * Head to [weatherbit.io](https://www.weatherbit.io/api) get API key
 * Replace `YOUR_API_KEY` with API keys in `iot-server/3rd-party-apikeys`.
+* Follow [here](https://stackoverflow.com/a/24123550) to get Gmail API Credential.
+* Replace your Gmail credentials in `iot-server/gmail`.
 
 ### Install mongodb
 1. `sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5`
@@ -18,5 +20,5 @@ The SunSmart application is an IoT enabled web application for monitoring the am
 2. `git clone` this project to AWS.
 3. `cd SunSmart/iot-server/`
 4. `npm install`
-5. `npm install express request mongoose ejs jwt-simple bcrypt-nodejs`
+5. `npm install express request mongoose ejs jwt-simple bcrypt-nodejs nodemailer`
 6. `npm start`
