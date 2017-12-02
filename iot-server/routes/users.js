@@ -160,14 +160,25 @@ router.put("/edit", function(req, res, next) {
 });
 
 router.get("/sendemail", function(req, res, next) {
+  var responseJson = {
+    status: "ERROR",
+    message: ""
+  };
 
+  if (!req.query.hasOwnProperty("email")) {
+    // Failure (400): Bad request (invalid query string)
+    responseJson.message = "email parameter missing";
+    return res.status(400).send(JSON.stringify(responseJson));
+  }
+
+  // Parse Gmail api's token from file and store to variables
   var array = fs.readFileSync(__dirname + '/../3rd-party-apikeys/gmail').toString().split('\n');
   var sender = array[0];
   var clientId = array[1];
   var clientSecret = array[2];
   var refreshToken = array[3];
   var accessToken = array[4];
-  var receiver = "your_receiver_email";
+  var receiver = req.query.email;
 
   let transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
@@ -194,8 +205,13 @@ router.get("/sendemail", function(req, res, next) {
   transporter.sendMail(mailOptions, function(error, response) {
     if (error) {
       console.log(error);
+      responseJson.message = error;
+      return res.status(400).send(JSON.stringify(responseJson));
     } else {
       console.log(response);
+      responseJson.status = "OK";
+      responseJson.message = "email sent.";
+      return res.status(200).send(JSON.stringify(responseJson));
     }
     transporter.close();
   });
