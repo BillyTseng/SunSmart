@@ -6,9 +6,22 @@ var User = require("../models/users");
 var Device = require("../models/device");
 var bcrypt = require("bcrypt-nodejs");
 var nodemailer = require("nodemailer");
+var url = require('url') ;
 
 // Secret key for JWT
 var secret = fs.readFileSync(__dirname + '/../jwtkey').toString();
+
+// A random string to verify user's email.
+function getRandomStr() {
+  var string = "";
+  var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for (var i = 0; i < 32; i++) {
+    string += alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+  }
+
+  return string;
+}
 
 /* GET Authenticate user on sign in. */
 router.post('/signin', function(req, res, next) {
@@ -193,29 +206,40 @@ router.get("/sendemail", function(req, res, next) {
           accessToken: accessToken
       }
   });
-
-  var mailOptions = {
-    from: sender,
-    to: receiver,
-    subject: "Test Email",
-    generateTextFromHTML: true,
-    html: "<b>Hello worldTest</b>"
-  };
-
-  transporter.sendMail(mailOptions, function(error, response) {
-    if (error) {
-      console.log(error);
-      responseJson.message = error;
-      return res.status(400).send(JSON.stringify(responseJson));
+  // Find the user's email and update the random string field to verify user in future.
+  var randomStr = getRandomStr();
+  User.findOneAndUpdate( { email: receiver} , {randomStr: randomStr}, function(err, user) {
+    if (err) {
+      res.status(401).json({ error: "Database findOne error" });
+    } else if (!user) {
+      res.status(401).json({ error: "Bad Request" }); // User not exist
     } else {
-      console.log(response);
-      responseJson.status = "OK";
-      responseJson.message = "email sent.";
-      return res.status(200).send(JSON.stringify(responseJson));
-    }
-    transporter.close();
-  });
+      var verifyEmailUrl = 'https://' + req.headers.host + '/users/auth?key=' + randomStr;
+      // console.log("verifyEmailUrl: " + verifyEmailUrl);
+      var mailOptions = {
+        from: sender,
+        to: receiver,
+        subject: "SunSmart email verification.",
+        generateTextFromHTML: true,
+        html: "<a href='" + verifyEmailUrl + "'>Click the link to finish the account registeration.</a>"
+      };
 
+      transporter.sendMail(mailOptions, function(error, response) {
+        if (error) {
+          console.log(error);
+          responseJson.message = error;
+          res.status(400).send(JSON.stringify(responseJson));
+        } else {
+          // Response status.
+          // console.log(response);
+          responseJson.status = "OK";
+          responseJson.message = "email sent.";
+          res.status(200).send(JSON.stringify(responseJson));
+        }
+        transporter.close();
+      });
+    }
+  });
 });
 
 module.exports = router;
