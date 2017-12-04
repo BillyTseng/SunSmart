@@ -67,57 +67,64 @@ router.post('/signup', function(req, res, next) {
   });
 });
 
-/* GET status */
-router.get("/status", function(req, res, next) {
+// Modularized code for /users/status
+var headerCheck = function(req, res, next) {
   // Check if the X-Auth header is set
   if (!req.headers["x-auth"]) {
     return res.status(401).json({error: "Missing X-Auth header"});
   }
+  next();
+}
 
-  // X-Auth should contain the token value
+var sessionCheck = function(req, res, next) {
   var token = req.headers["x-auth"];
-
-  // try decoding
   try {
     var decoded = jwt.decode(token, secret);
-    var userStatus = {};
-
-    // Find a user based on decoded token
-    User.findOne({email:decoded.email}, function (err, user) {
-      if (err) {
-        return res.json({error : err});
-      } else {
-        if (!user) {
-          return res.json({error : "User not found"});
-        } else {
-          userStatus['email'] = user.email;
-          userStatus['fullName'] = user.fullName;
-          userStatus['lastAccess'] = user.lastAccess;
-          userStatus['redirect'] = '/home.html';
-
-          // Find devices based on decoded token
-          Device.find({ userEmail : decoded.email}, function(err, devices) {
-            if (err) {
-              res.json({error : err});
-            } else {
-              // Construct device list
-              var deviceList = [];
-              for (device of devices) {
-                deviceList.push({
-                  deviceId: device.deviceId,
-                  apikey: device.apikey
-                });
-              }
-              userStatus['devices'] = deviceList;
-              res.json(userStatus);
-            }
-          });
-        }
-      }
-    });
+    res.locals.decoded = decoded;
+    next();
   } catch (ex) {
     res.status(401).json({ error: "Invalid JWT" });
   }
+}
+
+/* GET status */
+router.get("/status", headerCheck, sessionCheck, function(req, res, next) {
+  var decoded = res.locals.decoded;
+  var userStatus = {};
+
+  // Find a user based on decoded token
+  User.findOne({email:decoded.email}, function (err, user) {
+    if (err) {
+      return res.json({error : err});
+    } else {
+      if (!user) {
+        return res.json({error : "User not found"});
+      } else {
+        userStatus['email'] = user.email;
+        userStatus['fullName'] = user.fullName;
+        userStatus['lastAccess'] = user.lastAccess;
+        userStatus['redirect'] = '/home.html';
+
+        // Find devices based on decoded token
+        Device.find({ userEmail : decoded.email}, function(err, devices) {
+          if (err) {
+            res.json({error : err});
+          } else {
+            // Construct device list
+            var deviceList = [];
+            for (device of devices) {
+              deviceList.push({
+                deviceId: device.deviceId,
+                apikey: device.apikey
+              });
+            }
+            userStatus['devices'] = deviceList;
+            res.json(userStatus);
+          }
+        });
+      }
+    }
+  });
 });
 
 router.put("/edit", function(req, res, next) {
