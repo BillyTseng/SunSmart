@@ -6,7 +6,8 @@ var userSchema = new db.Schema({
   passwordHash: String,
   lastAccess:   { type: Date, default: Date.now },
   userDevices:  [ String ],
-  randomStr:    String
+  randomStr:    String,
+  verified:     { type: Boolean, default: false }
 });
 
 var User = db.model("User", userSchema);

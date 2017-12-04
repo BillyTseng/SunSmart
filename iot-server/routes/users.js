@@ -204,7 +204,7 @@ router.get("/sendemail", function(req, res, next) {
   var randomStr = getRandomStr();
   User.findOneAndUpdate( { email: receiver} , {randomStr: randomStr}, function(err, user) {
     if (err) {
-      res.status(401).json({ error: "Database findOne error" });
+      res.status(401).json({ error: "Database findOneAndUpdate error" });
     } else if (!user) {
       res.status(401).json({ error: "Bad Request" }); // User not exist
     } else {
@@ -232,6 +232,30 @@ router.get("/sendemail", function(req, res, next) {
         }
         transporter.close();
       });
+    }
+  });
+});
+
+router.get("/auth", function(req, res, next) {
+  var responseJson = {
+    status: "ERROR",
+    message: ""
+  };
+
+  if (!req.query.hasOwnProperty("key")) {
+    // Failure (400): Bad request (invalid query string)
+    responseJson.message = "key parameter missing";
+    return res.status(400).send(JSON.stringify(responseJson));
+  }
+
+  var key = req.query.key;
+  User.findOneAndUpdate({randomStr: key}, {verified: true}, function(err, user) {
+    if (err) {
+      res.status(401).json({ error: "Database findOneAndUpdate error" });
+    } else if (!user) {
+      res.status(401).json({ error: "Bad Request" }); // User not exist
+    } else {
+      res.redirect("/home.html");
     }
   });
 });
