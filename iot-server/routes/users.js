@@ -105,6 +105,12 @@ router.get("/status", headerCheck, sessionCheck, function(req, res, next) {
         userStatus['lastAccess'] = user.lastAccess;
         userStatus['redirect'] = '/home.html';
 
+        if(user.verified) {
+          userStatus['verified'] = true;
+        } else {
+          userStatus['verified'] = false;
+        }
+
         // Find devices based on decoded token
         Device.find({ userEmail : decoded.email}, function(err, devices) {
           if (err) {

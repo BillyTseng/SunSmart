@@ -49,11 +49,45 @@ function composeRowOfDeviceTable(deviceId, apikey) {
     {deviceId: deviceId}, showEditDeviceId);
 }
 
+function sendVerifyEmail(event) {
+  var email = event.data.email;
+
+  $("#error").removeClass('alert-danger');
+  $("#error").addClass('alert-info');
+  $("#error").html("Sending Email ...")
+  $("#error").show();
+
+  $.ajax({
+      url: '/users/sendemail?email=' + email,
+      type: 'GET',
+      responseType: 'json',
+      success: function() {
+        $("#error").html("Email Sent.")
+      },
+      error: function(jqXHR, status, error) {
+        var response = JSON.parse(jqXHR.responseText);
+        $("#error").addClass('alert-danger');
+        $("#error").removeClass('alert-info');
+        $("#error").html("Error: " + response.message);
+        $("#error").show();
+      }
+  });
+}
+
 // Update page to display user's account information and list of devices with apikeys
 function statusResponse(data, status, xhr) {
   $("#email").html(data.email);
   $("#fullName").html(data.fullName);
   $("#lastAccess").html(data.lastAccess);
+
+  if(data.verified) {
+    $("#addDevice").show();
+    $("#addDevice").click(showAddDeviceForm);
+    $("#verifyEmailNotice").hide();
+  } else {
+    $("#verifyEmailNotice").show();
+    $("#verifyEmailNotice button").click({email: data.email}, sendVerifyEmail);
+  }
 
   // Add the devices to the table
   for (var device of data.devices) {
@@ -250,7 +284,6 @@ $(function() {
   }
 
   // Register event listeners
-  $("#addDevice").click(showAddDeviceForm);
   $("#registerDevice").click(registerDevice);
   $("#cancel").click(hideAddDeviceForm);
   $("#editUserInfo").click(showEditUserInfo);
