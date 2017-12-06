@@ -1,8 +1,9 @@
 // GET the uv record
 function getUVRecord() {
   $.ajax({
-      url: '/record/all',
+      url: '/record/byuser',
       type: 'GET',
+      headers: { 'x-auth': window.localStorage.getItem("token") },
       responseType: 'json',
       success: markUVRecord,
       error: function(jqXHR, status, error) {

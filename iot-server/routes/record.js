@@ -1,6 +1,67 @@
 var express = require('express');
 var router = express.Router();
 var Record = require("../models/record");
+var fs = require('fs');
+var jwt = require("jwt-simple");
+var Device = require("../models/device");
+
+// Secret key for JWT
+var secret = fs.readFileSync(__dirname + '/../jwtkey').toString();
+
+// Modularized code for /users/status
+var headerCheck = function(req, res, next) {
+  // Check if the X-Auth header is set
+  if (!req.headers["x-auth"]) {
+    return res.status(401).json({error: "Missing X-Auth header"});
+  }
+  next();
+}
+
+var sessionCheck = function(req, res, next) {
+  var token = req.headers["x-auth"];
+  try {
+    var decoded = jwt.decode(token, secret);
+    res.locals.decoded = decoded;
+    next();
+  } catch (ex) {
+    res.status(401).json({ error: "Invalid JWT" });
+  }
+}
+
+router.get('/byuser', headerCheck, sessionCheck, function(req, res, next) {
+  var decoded = res.locals.decoded;
+  // Find devices based on decoded token
+  Device.find({ userEmail : decoded.email}, function(err, devices) {
+    if (err) {
+      var errormsg = {"message": err};
+      res.status(400).send(JSON.stringify(errormsg));
+    } else {
+      for (device of devices) {
+        // Find record by user's device IDs.
+        Record.find({ deviceId : device.deviceId }, function(err, allDevices) {
+          if (err) {
+            var errormsg = {"message": err};
+            res.status(400).send(JSON.stringify(errormsg));
+          } else {
+            // Create JSON response to contain all record.
+            var responseJson = { record: [] };
+            for (var doc of allDevices) {
+              // For each found device add a new element to the array
+              responseJson.record.push({
+                "deviceId": doc.deviceId,
+                "latitude": doc.latitude,
+                "longitude": doc.longitude,
+                "uv": doc.uv,
+                "time": doc.submitTime
+              });
+            }
+            res.status(200).send(JSON.stringify(responseJson));
+          }
+        });
+      }
+    }
+  });
+});
 
 /* POST: create a new record. */
 router.post('/create', function(req, res, next) {
