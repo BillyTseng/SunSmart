@@ -48,9 +48,36 @@ function initMap() {
   getUVRecord();
 }
 
+function sendReqAPIKEY() {
+    $.ajax({
+      url: '/users/gmap',
+      type: 'GET',
+      headers: { 'x-auth': window.localStorage.getItem("token") },
+      responseType: 'json',
+      success: getAPIKEY,
+      error: function(jqXHR, status, error) {
+        if (status === 401) {
+            window.localStorage.removeItem("token");
+            window.location = "signin.html";
+        } else {
+          alert("Load Map Error");
+        }
+      }
+    });
+}
+
+function getAPIKEY(data, status, xhr) {
+  var apikey = data.apikey;
+  var url = "https://maps.googleapis.com/maps/api/js?key=" + apikey + "&callback=initMap";
+  // Put the script after the container div
+  $(".container").after('<script async defer src=' + url + '></script>');
+}
+
 // Handle authentication on page load
 document.addEventListener("DOMContentLoaded", function() {
-   if (!window.localStorage.getItem('token') ) {
-      window.location = "signin.html";
-   }
+  if (!window.localStorage.getItem('token') ) {
+    window.location = "signin.html";
+  } else {
+    sendReqAPIKEY();
+  }
 });

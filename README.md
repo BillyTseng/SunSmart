@@ -7,6 +7,8 @@ The SunSmart application is an IoT enabled web application for monitoring the am
 * Replace `YOUR_API_KEY` with API keys in `iot-server/3rd-party-apikeys`.
 * Follow [here](https://stackoverflow.com/a/24123550) to get Gmail API Credential.
 * Replace your Gmail credentials in `iot-server/gmail`.
+* Follow [here](https://developers.google.com/maps/documentation/javascript/get-api-key) to get Google Maps APIKEY.
+* Replace your Google Maps APIKEY in `iot-server/googlemaps`.
 
 ### Install mongodb
 1. `sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5`

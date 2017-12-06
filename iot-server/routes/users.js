@@ -87,6 +87,14 @@ var sessionCheck = function(req, res, next) {
   }
 }
 
+router.get('/gmap', headerCheck, sessionCheck, function(req, res, next) {
+  // Import api key from a text file.
+  var apikey = fs.readFileSync(__dirname + '/../3rd-party-apikeys/googlemaps').toString();
+  // Trim newlines away
+  apikey = apikey.replace(/(\r\n|\n|\r)/gm,"");
+  return res.json({apikey : apikey});
+});
+
 /* GET status */
 router.get("/status", headerCheck, sessionCheck, function(req, res, next) {
   var decoded = res.locals.decoded;
