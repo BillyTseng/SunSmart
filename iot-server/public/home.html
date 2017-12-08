@@ -1,4 +1,4 @@
-<p <!doctype html>
+<!doctype html>
 <html lang="en">
   <head>
     <title>Hello, Home!</title>
@@ -10,17 +10,22 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
   </head>
   <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="home.html">SunSmart</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a class="nav-item nav-link" href="home.html">Home</a>
+          <a class="nav-item nav-link" href="map.html">Map</a>
+          <a class="nav-item nav-link" href="#" id="signout">Sign Out</a>
+        </div>
+      </div>
+    </nav>
     <div class="row">
       <div class="col-lg-2 col-xs-1"></div>
       <div class="col-lg-8 col-xs-10">
-        <div class="row">
-          <div class="col">
-            <a href="home.html" class="btn btn-outline-info" role="button">SunSmart - Home!</a>
-          </div>
-          <div class="col">
-            <a id="signout" class="btn btn-outline-danger float-right" href="#" role="button">Sign out</a>
-          </div>
-        </div>
         <div class="card">
           <div class="card-header">
             <span>Account details</span>
