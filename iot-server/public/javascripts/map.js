@@ -41,6 +41,10 @@ function markUVRecord(data, status, xhr) {
           fontSize: "14px"
        },
     });
+    latitude = rec.latitude;
+    longitude = rec.longitude;
+    // Use the last location to parse weather's data
+    sendReqWeather(latitude, longitude);
   }
 }
 
@@ -50,21 +54,21 @@ function initMap() {
 }
 
 function sendReqAPIKEY() {
-    $.ajax({
-      url: '/users/gmap',
-      type: 'GET',
-      headers: { 'x-auth': window.localStorage.getItem("token") },
-      responseType: 'json',
-      success: getAPIKEY,
-      error: function(jqXHR, status, error) {
-        if (status === 401) {
-            window.localStorage.removeItem("token");
-            window.location = "signin.html";
-        } else {
-          alert("Load Map Error");
-        }
+  $.ajax({
+    url: '/users/gmap',
+    type: 'GET',
+    headers: { 'x-auth': window.localStorage.getItem("token") },
+    responseType: 'json',
+    success: getAPIKEY,
+    error: function(jqXHR, status, error) {
+      if (status === 401) {
+          window.localStorage.removeItem("token");
+          window.location = "signin.html";
+      } else {
+        alert("Load Map Error");
       }
-    });
+    }
+  });
 }
 
 function getAPIKEY(data, status, xhr) {

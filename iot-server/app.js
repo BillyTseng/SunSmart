@@ -14,7 +14,7 @@ var credentials = {key: privateKey, cert: certificate};
 */
 var index = require('./routes/index');
 var users = require('./routes/users');
-var uvindex = require('./routes/uvindex');
+var weathers = require('./routes/weathers');
 var record = require('./routes/record');
 var device = require('./routes/device');
 
@@ -41,7 +41,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/users', users);
-app.use('/uvindex', uvindex);
+app.use('/weathers', weathers);
 app.use('/record', record);
 app.use('/device', device);
 
