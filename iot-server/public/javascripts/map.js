@@ -28,6 +28,8 @@ function markUVRecord(data, status, xhr) {
     center: uluru
   });
 
+  var markers = [];
+  var bounds = new google.maps.LatLngBounds();
   var json = $.parseJSON(data);
   // Add markers for all record
   for (var rec of json.record) {
@@ -41,11 +43,18 @@ function markUVRecord(data, status, xhr) {
           fontSize: "14px"
        },
     });
+    markers.push(marker);
     latitude = rec.latitude;
     longitude = rec.longitude;
-    // Use the last location to parse weather's data
-    sendReqWeather(latitude, longitude);
   }
+  // Use the last location to parse weather's data
+  sendReqWeather(latitude, longitude);
+
+  // Re-zoom map to fit all markers
+  for (var i = 0; i < markers.length; i++) {
+   bounds.extend(markers[i].getPosition());
+  }
+  map.fitBounds(bounds);
 }
 
 // Executes once the google map api is loaded, and then sets up and calls the handler
