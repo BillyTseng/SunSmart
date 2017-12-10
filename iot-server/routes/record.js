@@ -36,29 +36,39 @@ router.get('/byuser', headerCheck, sessionCheck, function(req, res, next) {
       var errormsg = {"message": err};
       res.status(400).send(JSON.stringify(errormsg));
     } else {
-      for (device of devices) {
-        // Find record by user's device IDs.
-        Record.find({ deviceId : device.deviceId }, function(err, allDevices) {
-          if (err) {
-            var errormsg = {"message": err};
-            res.status(400).send(JSON.stringify(errormsg));
-          } else {
-            // Create JSON response to contain all record.
-            var responseJson = { record: [] };
-            for (var doc of allDevices) {
+      // Create JSON response to contain all record.
+      var responseJson = { record: [] };
+      // Use Promise to resolve the multi-device issue which causes server down.
+      const findRecordPromise = new Promise((resolve, reject) => {
+        for (device of devices) {
+          // Find record by user's device IDs.
+          Record.find({ deviceId : device.deviceId }, function(err, allDevices) {
+            if (err) {
+              reject("Error: " + err);
+            } else {
               // For each found device add a new element to the array
-              responseJson.record.push({
-                "deviceId": doc.deviceId,
-                "latitude": doc.latitude,
-                "longitude": doc.longitude,
-                "uv": doc.uv,
-                "time": doc.submitTime
-              });
+              for (var doc of allDevices) {
+                responseJson.record.push({
+                  "deviceId": doc.deviceId,
+                  "latitude": doc.latitude,
+                  "longitude": doc.longitude,
+                  "uv": doc.uv,
+                  "time": doc.submitTime
+                });
+              }
+              resolve('Success!');
             }
-            res.status(200).send(JSON.stringify(responseJson));
-          }
-        });
-      }
+          });
+        }
+      });
+      findRecordPromise.then( value => {
+        // Success!
+        res.status(200).send(JSON.stringify(responseJson));
+      }, reason => {
+        // Error!
+        res.status(400).send(JSON.stringify(reason));
+      } );
+
     }
   });
 });
