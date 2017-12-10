@@ -63,7 +63,7 @@ router.get('/byuser', headerCheck, sessionCheck, function(req, res, next) {
       });
       findRecordPromise.then( value => {
         // Success!
-        res.status(200).send(JSON.stringify(responseJson));
+        res.status(201).send(JSON.stringify(responseJson));
       }, reason => {
         // Error!
         res.status(400).send(JSON.stringify(reason));
@@ -74,7 +74,7 @@ router.get('/byuser', headerCheck, sessionCheck, function(req, res, next) {
 });
 
 /* POST: create a new record. */
-router.post('/create', function(req, res, next) {
+/*router.post('/create', function(req, res, next) {
 
   var responseJson = {
     status : "",
@@ -98,7 +98,7 @@ router.post('/create', function(req, res, next) {
       res.status(201).send(JSON.stringify(responseJson));
     }
   });
-});
+});*/
 
 // GET request return all
 router.get('/all', function(req, res, next) {
