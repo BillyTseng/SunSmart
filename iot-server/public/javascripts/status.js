@@ -78,7 +78,7 @@ function sendVerifyEmail(event) {
 function statusResponse(data, status, xhr) {
   $("#email").html(data.email);
   $("#fullName").html(data.fullName);
-  $("#lastAccess").html(data.lastAccess);
+  // $("#lastAccess").html(data.lastAccess);
 
   if(data.verified) {
     $("#addDevice").show();

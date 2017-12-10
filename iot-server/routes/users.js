@@ -23,7 +23,7 @@ function getRandomStr() {
   return string;
 }
 
-/* GET Authenticate user on sign in. */
+/* Authenticate user on sign in. */
 router.post('/signin', function(req, res, next) {
   User.findOne( { email: req.body.email} , function(err, user) {
     if (err) {
@@ -92,7 +92,7 @@ router.get('/gmap', headerCheck, sessionCheck, function(req, res, next) {
   var apikey = fs.readFileSync(__dirname + '/../3rd-party-apikeys/googlemaps').toString();
   // Trim newlines away
   apikey = apikey.replace(/(\r\n|\n|\r)/gm,"");
-  return res.json({apikey : apikey});
+  return res.status(200).json({apikey : apikey});
 });
 
 /* GET status */
@@ -122,7 +122,7 @@ router.get("/status", headerCheck, sessionCheck, function(req, res, next) {
         // Find devices based on decoded token
         Device.find({ userEmail : decoded.email}, function(err, devices) {
           if (err) {
-            res.json({error : err});
+            res.status(400).json({error : err});
           } else {
             // Construct device list
             var deviceList = [];
@@ -133,7 +133,7 @@ router.get("/status", headerCheck, sessionCheck, function(req, res, next) {
               });
             }
             userStatus['devices'] = deviceList;
-            res.json(userStatus);
+            res.status(200).json(userStatus);
           }
         });
       }
