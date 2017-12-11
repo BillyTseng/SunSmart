@@ -49,12 +49,13 @@ function markUVRecord(data, status, xhr) {
   }
   // Use the last location to parse weather's data
   sendReqWeather(latitude, longitude);
-
-  // Re-zoom map to fit all markers
-  for (var i = 0; i < markers.length; i++) {
-   bounds.extend(markers[i].getPosition());
+  if (markers.length > 0) {
+    // Re-zoom map to fit all markers
+    for (var i = 0; i < markers.length; i++) {
+     bounds.extend(markers[i].getPosition());
+    }
+    map.fitBounds(bounds);  
   }
-  map.fitBounds(bounds);
 }
 
 // Executes once the google map api is loaded, and then sets up and calls the handler
